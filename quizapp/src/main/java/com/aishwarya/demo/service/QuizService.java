@@ -7,10 +7,15 @@ import com.aishwarya.demo.dao.QuizDao;
 import com.aishwarya.demo.model.Question;
 import com.aishwarya.demo.model.QuestionWrapper;
 import com.aishwarya.demo.model.Quiz;
+import com.aishwarya.demo.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.*;
 
 @Service
@@ -46,9 +51,23 @@ public class QuizService {
            questionsForUser.add(qw);
 
        }
-
-
-
        return new ResponseEntity<>(questionsForUser,HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<Integer> calculateResult(Integer id, List<Response> responses) {
+
+        Optional<Quiz> quiz=quizDao.findById(id);
+        List<Question> questions=quiz.get().getQuestions();
+        int right=0;
+        int i=0;
+        for(Response response:responses){
+            if(response.getResponse().equals(questions.get(i).getRightAnswer()))
+                right++;
+
+                i++;
+
+        }
+        return new ResponseEntity<>(right,HttpStatus.OK);
     }
 }
